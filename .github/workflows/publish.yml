@@ -226,7 +226,7 @@ jobs:
         with:
           name: github-packages-publication
           if-no-files-found: error
-          path: build/libs
+          path: build/libs/*.jar
 
       - name: capture maven central bundle
         if: steps.targets.outputs.publish_maven == 'true'
@@ -264,12 +264,12 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: github-packages-publication
-          path: build
+          path: build/libs
 
       - name: verify github packages publication artifacts
         run: |
-          if [ ! -d build/libs ]; then
-            echo "Expected build/libs to exist after downloading publication artifacts." >&2
+          if ! find build/libs -maxdepth 1 -type f -name '*.jar' | grep -q .; then
+            echo "Expected at least one jar in build/libs after downloading publication artifacts." >&2
             exit 1
           fi
 
